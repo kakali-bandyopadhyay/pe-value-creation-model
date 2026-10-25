@@ -1,0 +1,11 @@
+.venv/
+.test-deps/
+.pip-temp/
+__pycache__/
+.pytest_cache/
+*.py[cod]
+.env
+out/
+outretry*/
+*.egg-info/
+~$*.xlsx
