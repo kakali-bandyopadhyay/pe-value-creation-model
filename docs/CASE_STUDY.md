@@ -56,11 +56,20 @@ Over the five-year hold, modeled net AI EBITDA contribution totals **−$0.44m**
 
 **Illustrative decision:** Base IRR of 19.33% falls just short of an illustrative 20% hurdle. Core growth and margin supply about two-thirds of the $8.76m EBITDA increase ($5.84m); the three initiatives supply about one-third ($2.92m), of which AI is only $0.18m. Closing the gap needs roughly $0.6m more exit EBITDA or about 0.26x on the exit multiple (approximate, from the Base equity bridge). The decision this supports: proceed only if diligence can evidence the core growth plan; the initiatives improve returns but cannot carry the case on their own.
 
+**Downside check:** in Downside the AI lever is net negative (about −$0.08m in 2030) because run costs exceed realized savings. Turning it off lifts Downside MOIC from 1.35x to 1.37x and IRR from 6.1% to 6.5% – the case for the Pause gate, and a reminder to model a pause as a toggle, not only a tracker signal.
+
 ### Risks shown in the model
 
 - Pricing adoption or churn misses plan: review the Pricing and mix KPI, plan-versus-actual variance and realization input on **VCP Tracker** and **Initiatives**.
 - Commercial savings are not validated: compare the synthetic savings KPI and target in **VCP Tracker** with its named owner and dependency.
 - AI adoption or output quality fails its gate: check the adoption and quality KPIs and threshold controls. The gate does not remove AI from the forecast, so a pause decision requires a separate scenario or toggle change.
 - Leverage, cash conversion or exit valuation differs from assumptions: inspect the debt and cash schedule and the two formula grids on **Sensitivity**.
+
+### Limitations
+
+- Annual periods only; quarterly tracker actuals are seeded, not forecast drivers.
+- Interest is charged on opening debt to avoid circular formulas; no refinancing, revolver or interim distributions.
+- Single exit at year 5 on an EBITDA multiple; no dividend recap, earn-out or management equity.
+- The AI gate is a governance signal and does not change the forecast unless the toggle is switched.
 
 All values and quarterly actuals are synthetic. The model contains no market research, diligence validation, company operating data, financing commitment or realized savings. Tax, working-capital, fee and debt assumptions are illustrative, not advice or an investment recommendation.

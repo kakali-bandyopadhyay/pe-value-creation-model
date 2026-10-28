@@ -156,6 +156,7 @@ def test_content_is_synthetic_and_restricted_terms_are_absent(verified_model):
             continue
         text = path.read_text(encoding="utf-8", errors="ignore")
         assert forbidden_word.casefold() not in text.casefold(), f"Restricted word in {path.relative_to(ROOT)}"
+        assert ("fic" + "tional") not in text.casefold(), f"Use 'synthetic', not the restricted word, in {path.relative_to(ROOT)}"
         for term in blocked:
             assert re.search(rf"\b{re.escape(term)}\b", text, re.IGNORECASE) is None, f"Restricted name in {path.relative_to(ROOT)}"
 

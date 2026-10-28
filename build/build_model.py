@@ -241,7 +241,7 @@ def build_controls(wb):
 def build_history(wb):
     ws = wb["Historical & Baseline"]
     style_title(ws, "Synthetic historical results and entry baseline",
-                "Illustrative historical data only. The fictional company did not report these figures. USD millions.", 8)
+                "Illustrative historical data only. The synthetic company did not report these figures. USD millions.", 8)
     for col, year in enumerate([2023, 2024, 2025], start=4):
         setv(ws, f"{get_column_letter(col)}6", year, kind="label", bold=True, fill=NAVY)
         ws[f"{get_column_letter(col)}6"].font = Font(name="Arial", size=10, bold=True, color=WHITE)
@@ -479,8 +479,8 @@ def build_returns(wb):
         (19,"Exit EBITDA multiple","=INDEX(Controls!$J$15:$J$17,MATCH(Controls!$D$6,Controls!$C$15:$C$17,0))",MULT),
         (20,"Exit enterprise value ($m)","=D18*D19",MONEY),
         (21,"Exit fees ($m)","=D20*Controls!$D$24",MONEY),
-        (22,"Exit gross debt ($m)","='Cash Flow & Debt'!H22",MONEY),
-        (23,"Exit equity proceeds ($m)","=D20-D21-D22+'Cash Flow & Debt'!H23",MONEY),
+        (22,"Exit net debt: gross debt less cash ($m)","='Cash Flow & Debt'!H24",MONEY),
+        (23,"Exit equity proceeds ($m)","=D20-D21-D22",MONEY),
         (25,"Sponsor MOIC","=D23/D16",MULT),
         (26,"Sponsor IRR from dated cash flows","=XIRR(D8:I8,D7:I7)",PCT),
     ]
@@ -488,7 +488,7 @@ def build_returns(wb):
         setv(ws,f"C{row}",label,kind="label",bold=row in (16,23,25,26))
         setv(ws,f"D{row}",formula,number_format=fmt,bold=row in (16,23,25,26))
     section(ws,29,"Returns calculation notes",8)
-    notes=["Entry enterprise value = FY2025 EBITDA × entry EBITDA multiple.","Sponsor equity funds enterprise value plus entry fees less senior debt at entry.","Exit equity proceeds = exit enterprise value less exit fees and exit gross debt plus retained cash.","MOIC = exit equity proceeds ÷ sponsor equity at entry. Interim sponsor distributions are shown in the dated cash-flow row.","IRR uses XIRR over the dated sponsor cash flows. With no interim distributions, the only positive flow is at exit."]
+    notes=["Entry enterprise value = FY2025 EBITDA × entry EBITDA multiple.","Sponsor equity funds enterprise value plus entry fees less senior debt at entry.","Exit equity proceeds = exit enterprise value less exit fees and exit net debt (gross debt less retained cash).","MOIC = exit equity proceeds ÷ sponsor equity at entry. Interim sponsor distributions are shown in the dated cash-flow row.","IRR uses XIRR over the dated sponsor cash flows. With no interim distributions, the only positive flow is at exit."]
     for i,note in enumerate(notes,start=30):setv(ws,f"C{i}",note,kind="label")
     ws.merge_cells("C30:H34");ws["C30"].alignment=Alignment(wrap_text=True,vertical="top")
     ws.column_dimensions["C"].width=48
@@ -514,7 +514,7 @@ def build_sensitivity(wb):
         setv(ws,f"C{row}",f"='Returns'!$D$18*$J{row}",number_format=MONEY)
         for col in range(4,9):
             L=get_column_letter(col)
-            setv(ws,f"{L}{row}",f"=(($C{row}*{L}$9)*(1-Controls!$D$24)-'Returns'!$D$22+'Cash Flow & Debt'!$H$23)/'Returns'!$D$16",number_format=MULT)
+            setv(ws,f"{L}{row}",f"=(($C{row}*{L}$9)*(1-Controls!$D$24)-'Returns'!$D$22)/'Returns'!$D$16",number_format=MULT)
     setv(ws,"C16","At each grid point, exit enterprise value equals exit EBITDA × exit multiple. Exit fees and selected-case net debt are then deducted before dividing by sponsor equity.",kind="label")
     ws.merge_cells("C16:H17");ws["C16"].alignment=Alignment(wrap_text=True,vertical="top")
     section(ws,20,"Exit multiple × AI cost-realization assumption, MOIC",10)
@@ -700,7 +700,7 @@ def build_checks(wb):
     # Actual check list, each calculation independently reads the owned build cells.
     checks=[
         (8,"Entry sponsor equity bridge", "=Returns!D13+Returns!D14-Returns!D15-Returns!D16", "Entry EV plus fees less debt equals sponsor equity."),
-        (9,"Exit sponsor proceeds bridge", "=Returns!D20-Returns!D21-Returns!D22+'Cash Flow & Debt'!H23-Returns!D23", "Exit EV less fee and debt plus retained cash equals exit equity proceeds."),
+        (9,"Exit sponsor proceeds bridge", "=Returns!D20-Returns!D21-Returns!D22-Returns!D23", "Exit EV less exit fees and net debt (gross debt less cash) equals exit equity proceeds."),
         (10,"Dashboard enterprise value bridge", "=Dashboard!D28+Dashboard!D29+Dashboard!D30-Dashboard!D31", "Entry EV plus EBITDA change at entry multiple plus multiple change equals exit EV."),
         (11,"Cash roll-forward, all forecast years", "=MAX(ABS('Cash Flow & Debt'!D18+'Cash Flow & Debt'!D17-'Cash Flow & Debt'!D19-'Cash Flow & Debt'!D21-'Cash Flow & Debt'!D23),ABS('Cash Flow & Debt'!E18+'Cash Flow & Debt'!E17-'Cash Flow & Debt'!E19-'Cash Flow & Debt'!E21-'Cash Flow & Debt'!E23),ABS('Cash Flow & Debt'!F18+'Cash Flow & Debt'!F17-'Cash Flow & Debt'!F19-'Cash Flow & Debt'!F21-'Cash Flow & Debt'!F23),ABS('Cash Flow & Debt'!G18+'Cash Flow & Debt'!G17-'Cash Flow & Debt'!G19-'Cash Flow & Debt'!G21-'Cash Flow & Debt'!G23),ABS('Cash Flow & Debt'!H18+'Cash Flow & Debt'!H17-'Cash Flow & Debt'!H19-'Cash Flow & Debt'!H21-'Cash Flow & Debt'!H23))", "Opening cash plus FCF less amortization and sweep equals ending cash in each year."),
         (12,"Debt roll-forward, all forecast years", "=MAX(ABS('Cash Flow & Debt'!D11-'Cash Flow & Debt'!D19-'Cash Flow & Debt'!D21-'Cash Flow & Debt'!D22),ABS('Cash Flow & Debt'!E11-'Cash Flow & Debt'!E19-'Cash Flow & Debt'!E21-'Cash Flow & Debt'!E22),ABS('Cash Flow & Debt'!F11-'Cash Flow & Debt'!F19-'Cash Flow & Debt'!F21-'Cash Flow & Debt'!F22),ABS('Cash Flow & Debt'!G11-'Cash Flow & Debt'!G19-'Cash Flow & Debt'!G21-'Cash Flow & Debt'!G22),ABS('Cash Flow & Debt'!H11-'Cash Flow & Debt'!H19-'Cash Flow & Debt'!H21-'Cash Flow & Debt'!H22))", "Opening debt less amortization and sweep equals ending debt in each year."),
@@ -745,7 +745,7 @@ def build_checks(wb):
     section(ws,50,"Synthetic assumption register",8)
     for col,label in enumerate(["Input group","Key assumption","Synthetic rationale"],start=3):setv(ws,f"{get_column_letter(col)}52",label,kind="label",bold=True,fill=NAVY)
     header(ws,52,3,5)
-    reg=[("Company baseline","FY2025 revenue and EBITDA","Illustrative scale for a fictional mid-market services case."),("Operating scenarios","Growth, margin lift, and exit multiple","Synthetic ranges to create meaningfully distinct operating and execution cases."),("Initiative economics","Benefits, ramps, implementation and run cost","Illustrative only; no observed company or project economics."),("Capital structure","Entry multiple, leverage, fees, interest and sweep","Simplified transaction assumptions, not a financing quote."),("AI automation","Addressable hours, cost/hour, avoidable share, realization","Capacity is monetized only when cost avoidance is explicitly assumed."),("Quarterly tracker","Plan, synthetic actual attainment and quality","Seeded for RAG and expand/fix/pause demonstrations."),("Tax and cash conversion","Tax, capex, working capital, depreciation","Simple illustrative rates; not tax or accounting advice.")]
+    reg=[("Company baseline","FY2025 revenue and EBITDA","Illustrative scale for a synthetic mid-market services case."),("Operating scenarios","Growth, margin lift, and exit multiple","Synthetic ranges to create meaningfully distinct operating and execution cases."),("Initiative economics","Benefits, ramps, implementation and run cost","Illustrative only; no observed company or project economics."),("Capital structure","Entry multiple, leverage, fees, interest and sweep","Simplified transaction assumptions, not a financing quote."),("AI automation","Addressable hours, cost/hour, avoidable share, realization","Capacity is monetized only when cost avoidance is explicitly assumed."),("Quarterly tracker","Plan, synthetic actual attainment and quality","Seeded for RAG and expand/fix/pause demonstrations."),("Tax and cash conversion","Tax, capex, working capital, depreciation","Simple illustrative rates; not tax or accounting advice.")]
     for row,data in enumerate(reg,start=53):
         for col,val in enumerate(data,start=3):setv(ws,f"{get_column_letter(col)}{row}",val,kind="label")
     for col,width in {"C":47,"D":45,"E":78,"F":80}.items():ws.column_dimensions[col].width=width
